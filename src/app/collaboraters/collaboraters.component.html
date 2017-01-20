@@ -1,0 +1,11 @@
+<table>
+  <tr *ngFor='let collaborater of collaboraters'>{{collaborater.firstName}}</tr>
+</table>
+
+<p-dataTable [value]="collaboraters">
+    <p-column field="firstName" header="Prénom"></p-column>
+    <p-column field="lastName" header="Nom"></p-column>
+    <p-column field="job" header="Métier"></p-column>
+    <p-column field="email" header="E-mail"></p-column>
+    <p-column field="phone" header="Téléphone"></p-column>
+</p-dataTable>
