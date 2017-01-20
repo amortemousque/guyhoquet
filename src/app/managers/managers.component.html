@@ -1,0 +1,12 @@
+<p-dataTable [value]="managers" [editable]="true">
+    <p-column field="name" header="Nom" [editable]="true"> </p-column>
+    <p-column field="phone" header="Téléphone" [editable]="true"></p-column>
+    <p-column field="mail" header="Mail" [editable]="true"></p-column>
+    <p-column field="address" header="Adresse" [editable]="true"></p-column>
+    <p-column field="hasValidList" header="Liste valide" [editable]="true"></p-column>
+    <p-column field="hasValidList" header="">
+      <template let-col let-manager="rowData" pTemplate="body">
+        <button (click)="sendMail(manager)">Envoyer un mail</button>
+      </template>
+    </p-column>
+</p-dataTable>

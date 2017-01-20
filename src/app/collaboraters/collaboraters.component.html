@@ -1,11 +1,28 @@
-<table>
-  <tr *ngFor='let collaborater of collaboraters'>{{collaborater.firstName}}</tr>
-</table>
+<p-dataTable [value]="collaboraters" [editable]="true" (onEditComplete)="onEditComplete($event)">
+    <p-column field="firstName" header="Prénom" [editable]="true">
+      <!--<template let-col let-collaborater="rowData" pTemplate="editor">
+        <input pInputText [(ngModel)]="collaborater[col.field]">{{collaborater.firstName}}</input>
+      </template>-->
+    </p-column>
+    <p-column field="lastName" header="Nom" [editable]="true"></p-column>
 
-<p-dataTable [value]="collaboraters">
-    <p-column field="firstName" header="Prénom"></p-column>
-    <p-column field="lastName" header="Nom"></p-column>
-    <p-column field="job" header="Métier"></p-column>
-    <p-column field="email" header="E-mail"></p-column>
-    <p-column field="phone" header="Téléphone"></p-column>
+    <p-column field="birthDate" header="Date de naissance" [editable]="true"  [style]=" {'overflow':'visible' }">
+
+      <template let-col let-collaborater="rowData" pTemplate="body">
+        {{collaborater[col.field]|date: 'dd/MM/yyyy'}}
+      </template>
+      <!--<template let-col let-collaborater="rowData" pTemplate="editor">
+        {{collaborater[col.field]|date: 'dd/MM/yyyy'}}
+      </template>-->
+    </p-column>
+
+
+
+    <p-column field="job" header="Métier" [editable]="true"></p-column>
+    <p-column field="email" header="E-mail" [editable]="true">
+        <!--<template let-col let-collaborater="rowData" pTemplate="editor">
+          <p-inputMask [(ngModel)]="collaborater[col.field]" mask="*@*">{{collaborater.firstName}}</p-inputMask>
+        </template>-->
+    </p-column>
+    <p-column field="phone" header="Téléphone" [editable]="true"></p-column>
 </p-dataTable>

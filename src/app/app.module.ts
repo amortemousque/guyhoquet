@@ -7,19 +7,25 @@ import { RouterModule, Routes } from '@angular/router';
 import { AppComponent } from './app.component';
 import { CollaboratersComponent } from './collaboraters/collaboraters.component';
 import { CollaboratersService } from './collaboraters.service';
+import { ManagersService } from './managers.service';
 import { AccordionModule } from 'primeng/primeng';
 import { MenuItem } from 'primeng/primeng';
-import { DataTableModule, SharedModule} from 'primeng/primeng';
+import { DataTableModule, SharedModule, InputMaskModule, CalendarModule} from 'primeng/primeng';
+import { ManagersComponent } from './managers/managers.component';
 
 // Define the routes
 const appRoutes: Routes = [
   {
-    path: 'collaboraters',
+    path: 'collaboraters/:token',
     component: CollaboratersComponent
   },
   {
+    path: 'managers/:token',
+    component: ManagersComponent
+  },
+  {
     path: '',
-    redirectTo: 'collaboraters',
+    redirectTo: 'collaboraters/',
     pathMatch: 'full'
   }
   // ,
@@ -30,7 +36,8 @@ const appRoutes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    CollaboratersComponent
+    CollaboratersComponent,
+    ManagersComponent
   ],
   imports: [
     RouterModule.forRoot(appRoutes), // Add routes to the app
@@ -38,9 +45,11 @@ const appRoutes: Routes = [
     FormsModule,
     HttpModule,
     DataTableModule,
-    SharedModule
+    SharedModule,
+    InputMaskModule,
+    CalendarModule
   ],
-  providers: [CollaboratersService],
+  providers: [CollaboratersService, ManagersService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
