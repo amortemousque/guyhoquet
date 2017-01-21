@@ -40,4 +40,12 @@ export class CollaboratersService {
     });
     return data;
   }
+
+  validateList(collaboraters) {
+       return this.http.put('http://localhost:3000/api/validateList/', collaboraters)
+                        .map(res => <Collaborater> res.json())
+                        .catch((error:any) => Observable.throw(error.json().error || 'Server error')); //...errors if any
+
+
+  }
 }

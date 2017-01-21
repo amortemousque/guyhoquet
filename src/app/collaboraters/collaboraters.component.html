@@ -1,8 +1,33 @@
-<p-dataTable [value]="collaboraters" [editable]="true" (onEditComplete)="onEditComplete($event)">
+<h1 class="page-header" id="overview">Collaborateurs</h1>
+<form (ngSubmit)="validateList()">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Date de naissance</th>
+        <th>Fonction</th>
+        <th>Mail</th>
+        <th>Téléphone</th>
+      </tr>
+    </thead>
+
+    <tr *ngFor="let collaborater of collaboraters; let i = index" [attr.data-index]="i">
+      <td><input type="text" pInputText required name="collaborateur[{{i}}][lastName]" [(ngModel)]="collaborater.lastName" /></td>
+      <td><input type="text" pInputText required name="collaborateur[{{i}}][firstName]" [(ngModel)]="collaborater.firstName" /></td>
+      <td><p-calendar required name="collaborateur[{{i}}][birthDate]" [(ngModel)]="collaborater.birthDate"></p-calendar></td>
+      <td><input type="text" pInputText required name="collaborateur[{{i}}][job]" [(ngModel)]="collaborater.job" /></td>
+      <td><input type="text" pInputText required name="collaborateur[{{i}}][email]" [(ngModel)]="collaborater.email" /></td>
+      <td><input type="text" pInputText required name="collaborateur[{{i}}][phone]" [(ngModel)]="collaborater.phone" /></td>
+    </tr>
+  </table>
+  <button pButton type="submit" icon="fa-check" iconPos="left" label="Valider ma liste"></button>
+  <button pButton type="button" icon="fa-plus" iconPos="left" (click)="validTab()" label="Ajouter un collaborateur"></button>
+
+</form>
+<!--<p-dataTable [value]="collaboraters" [editable]="true" (onEditComplete)="onEditComplete($event)">
     <p-column field="firstName" header="Prénom" [editable]="true">
-      <!--<template let-col let-collaborater="rowData" pTemplate="editor">
-        <input pInputText [(ngModel)]="collaborater[col.field]">{{collaborater.firstName}}</input>
-      </template>-->
+
     </p-column>
     <p-column field="lastName" header="Nom" [editable]="true"></p-column>
 
@@ -11,18 +36,17 @@
       <template let-col let-collaborater="rowData" pTemplate="body">
         {{collaborater[col.field]|date: 'dd/MM/yyyy'}}
       </template>
-      <!--<template let-col let-collaborater="rowData" pTemplate="editor">
-        {{collaborater[col.field]|date: 'dd/MM/yyyy'}}
-      </template>-->
+      <template let-col let-collaborater="rowData" pTemplate="editor">
+          <p-calendar [(ngModel)]="collaborater[col.field]" pattern="dd/MM/yyyy" [locale]="fr" ></p-calendar>
+      </template>
     </p-column>
 
 
 
-    <p-column field="job" header="Métier" [editable]="true"></p-column>
+    <p-column field="job" header="Fonction" [editable]="true"></p-column>
     <p-column field="email" header="E-mail" [editable]="true">
-        <!--<template let-col let-collaborater="rowData" pTemplate="editor">
-          <p-inputMask [(ngModel)]="collaborater[col.field]" mask="*@*">{{collaborater.firstName}}</p-inputMask>
-        </template>-->
+
     </p-column>
     <p-column field="phone" header="Téléphone" [editable]="true"></p-column>
-</p-dataTable>
+</p-dataTable>-->
+

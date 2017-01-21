@@ -1,5 +1,6 @@
 const express = require('express');
 var nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 const router = express.Router();
 
@@ -23,11 +24,6 @@ router.get('/', (req, res) => {
   res.send('api works');
 });
 
-router.get('/test', (req, res) => {
-  res.send('test api');
-});
-
-
 router.get('/collaboraters', (req, res) => {
     connection.query('SELECT * from collaborater', function(err, rows, fields) {
       if (err) throw err;
@@ -37,8 +33,6 @@ router.get('/collaboraters', (req, res) => {
      // console.log('The solution is: ', rows[0].id);
     });
 });
-
-
 
 router.get('/collaboraters/:token', (req, res) => {
     console.log('The user token: ', req.params.token);
@@ -60,7 +54,6 @@ router.get('/collaboraters/:token', (req, res) => {
       }
     });
 });
-
 
 router.get('/managers/:token', (req, res) => {
     console.log('The user token: ', req.params.token);
@@ -90,37 +83,61 @@ router.get('/sendMail/:id', (req, res) => {
       if (err) throw err;
       console.log('The user is: ', rows);
       var user = rows[0];
+      require('crypto').randomBytes(48, function(err, buffer) {
+        var token = buffer.toString('hex') + user.id;
+        console.log("token : "+token);
 
-       // Not the movie transporter!
-      var transporter = nodemailer.createTransport({
-          service: 'Gmail',
-          auth: {
-              user: 'aymeric.mortemousque@gmail.com', // Your email id
-              pass: 'jhLiexc7' // Your password
-          }
-      });
+        connection.query("UPDATE user set token = '"+token+"' where id='"+user.id+"'", function(err, rows, fields) {
 
-      var mailOptions = {
-          from: 'aymeric.mortemousque@gmail.com', // sender address
-          to: user.mail, // list of receivers
-          subject: 'Email Example', // Subject line
-          text: 'Hello world from \n\n' //, // plaintext body
-          // html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
-      };
+          // Not the movie transporter!
+          var transporter = nodemailer.createTransport({
+              service: 'Gmail',
+              auth: {
+                  user: 'aymeric.mortemousque@gmail.com', // Your email id
+                  pass: 'jhLiexc7' // Your password
+              }
+          });
 
-      transporter.sendMail(mailOptions, function(error, info){
-          if(error){
-              console.log(error);
-              res.json({yo: 'error'});
-          }else{
-              console.log('Message sent: ' + info.response);
-              res.json({yo: info.response});
+          var mailOptions = {
+              from: 'aymeric.mortemousque@gmail.com', // sender address
+              to: user.mail, // list of receivers
+              subject: 'Email Example', // Subject line
+              text: 'Hello world from \n\n' //, // plaintext body
+              // html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
           };
+
+          transporter.sendMail(mailOptions, function(error, info){
+              if(error){
+                  console.log(error);
+                  res.json({yo: 'error'});
+              }else{
+                  console.log('Message sent: ' + info.response);
+                  res.json({yo: info.response});
+              };
+          });
+
+        });
+
       });
 
     });
 });
 
+router.put('/validateList', (req, res) => {
+    console.log('The user is: ', req.body);
+    var collaboraters = req.body;
+    collaboraters.forEach(function(collaborater) {
+      collaborater.birthDate = collaborater.birthDate.toLocaleString();
+      if(collaboraters.firstName != "" && collaboraters.LastName != "" && collaboraters.BirthDate != "" && collaboraters.job != "" ) {
+          connection.query("UPDATE collaborater set firstName = '"+collaborater.firstName+"', lastName='"+collaborater.lastName+"', job='"+collaborater.job+"', email='"+collaborater.email+"' , phone='"+collaborater.phone+"'",
+            function(err, rows, fields) {
+              if (err) throw err;
+              res.json({ message: 'Collaborater created!' });
+          });
+      }
+    }, this);
+
+});
 
 //create
 router.post('/collaboraters', (req, res) => {
@@ -150,6 +167,5 @@ router.delete('/collaboraters/:id', (req, res) => {
 
     });
 });
-
 
 module.exports = router;

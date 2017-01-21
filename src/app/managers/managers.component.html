@@ -1,12 +1,18 @@
+<h1 class="page-header" id="overview">Managers</h1>
 <p-dataTable [value]="managers" [editable]="true">
     <p-column field="name" header="Nom" [editable]="true"> </p-column>
     <p-column field="phone" header="Téléphone" [editable]="true"></p-column>
     <p-column field="mail" header="Mail" [editable]="true"></p-column>
     <p-column field="address" header="Adresse" [editable]="true"></p-column>
-    <p-column field="hasValidList" header="Liste valide" [editable]="true"></p-column>
+    <p-column field="hasValidList" header="Liste validée" [editable]="true">
+       <template let-col let-manager="rowData" pTemplate="body">
+         <i class="fa fa-times" [hidden]="manager.hasValidList"></i>
+         <i class="fa fa-check" [hidden]="!manager.hasValidList"></i>
+      </template>
+    </p-column>
     <p-column field="hasValidList" header="">
       <template let-col let-manager="rowData" pTemplate="body">
-        <button (click)="sendMail(manager)">Envoyer un mail</button>
+        <button pButton icon="fa-send" iconPos="left" (click)="sendMail(manager)">Envoyer un mail</button>
       </template>
     </p-column>
 </p-dataTable>

@@ -14,10 +14,18 @@ import 'rxjs/add/operator/toPromise';
 export class CollaboratersComponent implements OnInit {
   token: string;
   collaboraters: Collaborater[];
-
+  fr: any;
   constructor(private collaboratersService: CollaboratersService, private route: ActivatedRoute) { }
 
   ngOnInit() {
+      this.fr = {
+        firstDayOfWeek: 0,
+        dayNames: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeurdi", "Vendredi", "Samedi"],
+        dayNamesShort: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+        dayNamesMin: ["Di","Lu","Ma","Me","Je","Ve","Sa"],
+        monthNames: [ "Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Aout","September","Octobre","November","December" ],
+        monthNamesShort: [ "Jan", "Fev", "Mar", "Avr", "Mai", "Jun","Jui", "Aou", "Sep", "Oct", "Nov", "Dec" ]
+    };
     this.route.params.subscribe(params => {
        this.token = params['token']; // (+) converts string 'id' to a number
         this.collaboratersService.getAllCollaboraters(this.token).subscribe(collaboraters => {
@@ -33,6 +41,15 @@ export class CollaboratersComponent implements OnInit {
     });
     console.log(event.data);
     console.log("I'm here updating taxvalue");
+  }
+
+  validateList(): void {
+    this.collaboratersService.validateList(this.collaboraters).toPromise().then(result => {
+    });
+  }
+
+  addCollaborater(): void {
+
   }
 
 }
