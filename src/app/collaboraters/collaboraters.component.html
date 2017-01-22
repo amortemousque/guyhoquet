@@ -9,22 +9,33 @@
         <th>Fonction</th>
         <th>Mail</th>
         <th>Téléphone</th>
+        <th></th>
       </tr>
     </thead>
 
     <tr *ngFor="let collaborater of collaboraters; let i = index" [attr.data-index]="i">
-      <td><input type="text" pInputText required name="collaborateur[{{i}}][lastName]" [(ngModel)]="collaborater.lastName" /></td>
-      <td><input type="text" pInputText required name="collaborateur[{{i}}][firstName]" [(ngModel)]="collaborater.firstName" /></td>
-      <td><p-calendar required name="collaborateur[{{i}}][birthDate]" [(ngModel)]="collaborater.birthDate"></p-calendar></td>
-      <td><input type="text" pInputText required name="collaborateur[{{i}}][job]" [(ngModel)]="collaborater.job" /></td>
-      <td><input type="text" pInputText required name="collaborateur[{{i}}][email]" [(ngModel)]="collaborater.email" /></td>
-      <td><input type="text" pInputText required name="collaborateur[{{i}}][phone]" [(ngModel)]="collaborater.phone" /></td>
+      <td><input type="text" pInputText required name="collaborater[{{i}}][lastName]" [(ngModel)]="collaborater.lastName" /></td>
+      <td><input type="text" pInputText required name="collaborater[{{i}}][firstName]" [(ngModel)]="collaborater.firstName" /></td>
+      <td><p-calendar required name="collaborater[{{i}}][birthDate]" [(ngModel)]="collaborater.birthDate"></p-calendar></td>
+      <td><input type="text" pInputText required name="collaborater[{{i}}][job]" [(ngModel)]="collaborater.job" /></td>
+      <td><input type="text" pInputText required name="collaborater[{{i}}][email]" [(ngModel)]="collaborater.email" /></td>
+      <td>
+        <p-inputMask  pInputText required name="collaborater[{{i}}][phone]" [(ngModel)]="collaborater.phone" mask="99 99 99 99 99"></p-inputMask>
+      </td>
+      <td><button pButton type="button" icon="fa-times" iconPos="left" (click)="removeCollaborater(collaborater)" label="Supprimer"></button></td>
+
     </tr>
   </table>
   <button pButton type="submit" icon="fa-check" iconPos="left" label="Valider ma liste"></button>
-  <button pButton type="button" icon="fa-plus" iconPos="left" (click)="validTab()" label="Ajouter un collaborateur"></button>
-
+  <button pButton type="button" icon="fa-plus" iconPos="left"  (click)="addCollaborater()" label="Ajouter un collaborateur"></button>
 </form>
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" #cd>
+    <p-footer>
+        <button type="button" pButton icon="fa-close" label="Non" (click)="cd.reject()"></button>
+        <button type="button" pButton icon="{{load ? 'fa-spin fa-circle-o-notch' : 'fa-check'}}" label="Oui" (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>
+
 <!--<p-dataTable [value]="collaboraters" [editable]="true" (onEditComplete)="onEditComplete($event)">
     <p-column field="firstName" header="Prénom" [editable]="true">
 

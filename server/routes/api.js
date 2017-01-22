@@ -1,6 +1,7 @@
 const express = require('express');
 var nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const dateformat = require('dateformat');
 
 const router = express.Router();
 
@@ -123,19 +124,36 @@ router.get('/sendMail/:id', (req, res) => {
     });
 });
 
-router.put('/validateList', (req, res) => {
-    console.log('The user is: ', req.body);
-    var collaboraters = req.body;
-    collaboraters.forEach(function(collaborater) {
-      collaborater.birthDate = collaborater.birthDate.toLocaleString();
-      if(collaboraters.firstName != "" && collaboraters.LastName != "" && collaboraters.BirthDate != "" && collaboraters.job != "" ) {
-          connection.query("UPDATE collaborater set firstName = '"+collaborater.firstName+"', lastName='"+collaborater.lastName+"', job='"+collaborater.job+"', email='"+collaborater.email+"' , phone='"+collaborater.phone+"'",
-            function(err, rows, fields) {
+router.put('/validateList/:token', (req, res) => {
+    console.log('toto: ', req.body);
+
+    connection.query("SELECT * from user where token='"+req.params.token+"'", function(err, rows, fields) {
+      var user = rows[0];
+
+      var collaboraters = req.body;
+      if(collaboraters.length > 0) {
+        connection.query("DELETE FROM collaborater WHERE userId='"+user.id+"'", function(err, rows, fields) {
               if (err) throw err;
-              res.json({ message: 'Collaborater created!' });
-          });
+                console.log('The user is: ', user);
+
+              collaboraters.forEach(function(collaborater) {
+                collaborater.birthDate = collaborater.birthDate.toLocaleString();
+                if(collaboraters.firstName != "" && collaboraters.LastName != "" && collaboraters.BirthDate != "" && collaboraters.job != "" ) {
+                  let birthDate = dateformat(collaborater.birthDate, "yyyy-mm-dd h:MM:ss");
+                  connection.query("INSERT INTO collaborater (firstName, lastName, birthDate, job, email, phone, userId) VALUES ('"+collaborater.firstName+"', '"+collaborater.lastName+"', '"+ birthDate +"', '"+collaborater.job+"', '"+collaborater.email+"' , '"+collaborater.phone+"', '"+user.id+"')",
+                      function(err, rows, fields) {
+                        if (err) throw err;
+                    });
+                }
+              }, this);
+              res.json({ message: 'Collaboraters created!' });
+
+        });
+
+      } else {
+          res.json({ message: 'No action!' });
       }
-    }, this);
+    });
 
 });
 

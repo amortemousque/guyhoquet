@@ -3,19 +3,22 @@ import { CollaboratersService } from '../collaboraters.service';
 import { DataTableModule, SharedModule, InputMaskModule, CalendarModule} from 'primeng/primeng';
 import { Collaborater } from '../model/collaborater';
 import { ActivatedRoute } from '@angular/router';
+import {ConfirmDialogModule,ConfirmationService} from 'primeng/primeng';
 
 import 'rxjs/add/operator/toPromise';
 
 @Component({
   selector: 'app-collaboraters',
   templateUrl: './collaboraters.component.html',
-  styleUrls: ['./collaboraters.component.scss']
+  styleUrls: ['./collaboraters.component.scss'],
+  providers: [ConfirmationService]
 })
 export class CollaboratersComponent implements OnInit {
   token: string;
+  load: boolean = false;
   collaboraters: Collaborater[];
   fr: any;
-  constructor(private collaboratersService: CollaboratersService, private route: ActivatedRoute) { }
+  constructor(private collaboratersService: CollaboratersService, private route: ActivatedRoute, private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
       this.fr = {
@@ -36,20 +39,32 @@ export class CollaboratersComponent implements OnInit {
 
   }
 
-  onEditComplete(event: any): void {
-    this.collaboratersService.updateCollaborater(event.data).toPromise().then(result => {
-    });
-    console.log(event.data);
-    console.log("I'm here updating taxvalue");
-  }
+  // onEditComplete(event: any): void {
+  //   this.collaboratersService.updateCollaborater(event.data).toPromise().then(result => {
+  //   });
+  //   console.log(event.data);
+  //   console.log("I'm here updating taxvalue");
+  // }
 
   validateList(): void {
-    this.collaboratersService.validateList(this.collaboraters).toPromise().then(result => {
-    });
+     this.confirmationService.confirm({
+          message: 'Etes vous sur de vouloir valider vos modifications sur votre liste de collaborateurs ?',
+          accept: () => {
+            this.load = true;
+            this.collaboratersService.validateList(this.token, this.collaboraters).toPromise().then(result => {
+              this.load = false;
+            });
+          }
+      });
   }
 
   addCollaborater(): void {
+    this.collaboraters.push(<Collaborater>{});
+  }
 
+  removeCollaborater(collaborater):void {
+    let index = this.collaboraters.indexOf(collaborater);
+    this.collaboraters.splice(index, 1);
   }
 
 }

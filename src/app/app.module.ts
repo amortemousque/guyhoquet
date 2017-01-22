@@ -10,7 +10,7 @@ import { CollaboratersService } from './collaboraters.service';
 import { ManagersService } from './managers.service';
 import { AccordionModule } from 'primeng/primeng';
 import { MenuItem } from 'primeng/primeng';
-import { DataTableModule, SharedModule, InputMaskModule, CalendarModule} from 'primeng/primeng';
+import { DataTableModule, SharedModule, InputMaskModule, CalendarModule, ConfirmDialogModule, ConfirmationService} from 'primeng/primeng';
 import { ManagersComponent } from './managers/managers.component';
 
 // Define the routes
@@ -47,7 +47,8 @@ const appRoutes: Routes = [
     DataTableModule,
     SharedModule,
     InputMaskModule,
-    CalendarModule
+    CalendarModule,
+    ConfirmDialogModule
   ],
   providers: [CollaboratersService, ManagersService],
   bootstrap: [AppComponent]
