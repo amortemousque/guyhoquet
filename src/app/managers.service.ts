@@ -18,4 +18,8 @@ export class ManagersService {
   sendMail(id) {
     return this.http.get('http://localhost:3000/api/sendMail/'+ id);
   }
+
+  sendMails() {
+    return this.http.get('http://localhost:3000/api/sendMails/');
+  }
 }

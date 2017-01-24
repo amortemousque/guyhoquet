@@ -1,12 +1,17 @@
-<h1 class="page-header" id="overview">Collaborateurs</h1>
-<form (ngSubmit)="validateList()">
+<div class="row">
+  <h1 class="page-header" id="overview">Collaborateurs
+    <button pButton  style="float: right; font-size: 14px;" type="button" icon="fa-plus" iconPos="left"  (click)="addCollaborater()" label="Ajouter un collaborateur"></button>
+  </h1>
+</div>
+<form (ngSubmit)="validateList(collaboraterForm)" #collaboraterForm="ngForm" novalidate>
   <table class="table">
     <thead>
       <tr>
+        <th>Genre</th>
         <th>Nom</th>
         <th>Prénom</th>
         <th>Date de naissance</th>
-        <th>Fonction</th>
+        <th>Titre</th>
         <th>Mail</th>
         <th>Téléphone</th>
         <th></th>
@@ -14,20 +19,32 @@
     </thead>
 
     <tr *ngFor="let collaborater of collaboraters; let i = index" [attr.data-index]="i">
+      <td>
+        <p-dropdown [style]="{'max-width':'68px'}" [options]="gender"  required name="collaborater[{{i}}][gender]"  [(ngModel)]="collaborater.gender"></p-dropdown>
+      </td>
       <td><input type="text" pInputText required name="collaborater[{{i}}][lastName]" [(ngModel)]="collaborater.lastName" /></td>
       <td><input type="text" pInputText required name="collaborater[{{i}}][firstName]" [(ngModel)]="collaborater.firstName" /></td>
-      <td><p-calendar required name="collaborater[{{i}}][birthDate]" [(ngModel)]="collaborater.birthDate"></p-calendar></td>
-      <td><input type="text" pInputText required name="collaborater[{{i}}][job]" [(ngModel)]="collaborater.job" /></td>
+      <td >
+        <p-calendar [locale]="fr" dateFormat="dd/mm/yy" required name="collaborater[{{i}}][birthDate]" [(ngModel)]="collaborater.birthDate"></p-calendar></td>
+      <td>
+        <p-dropdown [options]="titles"  required name="collaborater[{{i}}][title]"  [(ngModel)]="collaborater.title"></p-dropdown>
+      </td>
       <td><input type="text" pInputText required name="collaborater[{{i}}][email]" [(ngModel)]="collaborater.email" /></td>
       <td>
-        <p-inputMask  pInputText required name="collaborater[{{i}}][phone]" [(ngModel)]="collaborater.phone" mask="99 99 99 99 99"></p-inputMask>
+        <input maxlength="10" pInputText required name="collaborater[{{i}}][phone]" [(ngModel)]="collaborater.phone"/>
       </td>
-      <td><button pButton type="button" icon="fa-times" iconPos="left" (click)="removeCollaborater(collaborater)" label="Supprimer"></button></td>
+      <td><button pButton type="button" icon="fa-times" iconPos="left" (click)="removeCollaborater(collaborater)" class="ui-button-danger" ></button></td>
 
     </tr>
   </table>
-  <button pButton type="submit" icon="fa-check" iconPos="left" label="Valider ma liste"></button>
-  <button pButton type="button" icon="fa-plus" iconPos="left"  (click)="addCollaborater()" label="Ajouter un collaborateur"></button>
+  <div [hidden]="collaboraterForm.valid">
+    <p-messages [value]="errorMsgs" [closable]="false"></p-messages>
+  </div>
+  <div>
+    <p-messages [value]="validMsgs" [closable]="false"></p-messages>
+  </div>
+
+  <button pButton  class="ui-button-success" type="submit" icon="fa-check" iconPos="left" label="Valider ma liste"></button>
 </form>
 <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" #cd>
     <p-footer>

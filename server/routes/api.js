@@ -77,18 +77,13 @@ router.get('/managers/:token', (req, res) => {
     });
 });
 
-router.get('/sendMail/:id', (req, res) => {
-    console.log('The user token: ', req.params.id);
 
-    connection.query("SELECT * from user where roleId=2 and id='"+req.params.id+"'", function(err, rows, fields) {
-      if (err) throw err;
-      console.log('The user is: ', rows);
-      var user = rows[0];
-      require('crypto').randomBytes(48, function(err, buffer) {
+function send(user) {
+   require('crypto').randomBytes(48, function(err, buffer) {
         var token = buffer.toString('hex') + user.id;
         console.log("token : "+token);
-
-        connection.query("UPDATE user set token = '"+token+"' where id='"+user.id+"'", function(err, rows, fields) {
+        var dateNow = dateformat(new Date(), "yyyy-mm-dd h:MM:ss");
+        connection.query("UPDATE user set token = '"+token+"', mailDate='"+dateNow+"' where id='"+user.id+"'", function(err, rows, fields) {
 
           // Not the movie transporter!
           var transporter = nodemailer.createTransport({
@@ -110,19 +105,44 @@ router.get('/sendMail/:id', (req, res) => {
           transporter.sendMail(mailOptions, function(error, info){
               if(error){
                   console.log(error);
-                  res.json({yo: 'error'});
               }else{
                   console.log('Message sent: ' + info.response);
-                  res.json({yo: info.response});
               };
           });
 
         });
 
       });
+}
 
+
+router.get('/sendMail/:id', (req, res) => {
+    console.log('The user token: ', req.params.id);
+
+    connection.query("SELECT * FROM user WHERE roleId=2 and id='"+req.params.id+"'", function(err, rows, fields) {
+      if (err) throw err;
+      console.log('The user is: ', rows);
+      var user = rows[0];
+      send(user);
+      res.json({message: "mails send"});
     });
 });
+
+router.get('/sendMails/', (req, res) => {
+    console.log('The user token: ', req.params.id);
+
+    connection.query("SELECT * FROM user WHERE roleId=2 AND hasValidList=0", function(err, rows, fields) {
+      if (err) throw err;
+      console.log('The user is: ', rows);
+      var users = rows;
+
+      users.forEach(function(user){
+        send(user);
+      });
+      res.json({message: "mails send"});
+    });
+});
+
 
 router.put('/validateList/:token', (req, res) => {
     console.log('toto: ', req.body);
@@ -140,12 +160,16 @@ router.put('/validateList/:token', (req, res) => {
                 collaborater.birthDate = collaborater.birthDate.toLocaleString();
                 if(collaboraters.firstName != "" && collaboraters.LastName != "" && collaboraters.BirthDate != "" && collaboraters.job != "" ) {
                   let birthDate = dateformat(collaborater.birthDate, "yyyy-mm-dd h:MM:ss");
-                  connection.query("INSERT INTO collaborater (firstName, lastName, birthDate, job, email, phone, userId) VALUES ('"+collaborater.firstName+"', '"+collaborater.lastName+"', '"+ birthDate +"', '"+collaborater.job+"', '"+collaborater.email+"' , '"+collaborater.phone+"', '"+user.id+"')",
-                      function(err, rows, fields) {
+                  connection.query("INSERT INTO collaborater (gender, firstName, lastName, birthDate, title, email, phone, userId) VALUES ('"+collaborater.gender+"', '"+collaborater.firstName+"', '"+collaborater.lastName+"', '"+ birthDate +"', '"+collaborater.title+"', '"+collaborater.email+"' , '"+collaborater.phone+"', '"+user.id+"')", function(err, rows, fields) {
                         if (err) throw err;
                     });
                 }
               }, this);
+
+              var dateNow = dateformat(new Date(), "yyyy-mm-dd h:MM:ss");
+              connection.query("UPDATE user set hasValidList = 1, listValidationDate='"+ dateNow +"' WHERE id='"+user.id+"'", function(err, rows, fields) {
+                if (err) throw err;
+              });
               res.json({ message: 'Collaboraters created!' });
 
         });

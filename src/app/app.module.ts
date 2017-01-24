@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -10,7 +10,7 @@ import { CollaboratersService } from './collaboraters.service';
 import { ManagersService } from './managers.service';
 import { AccordionModule } from 'primeng/primeng';
 import { MenuItem } from 'primeng/primeng';
-import { DataTableModule, SharedModule, InputMaskModule, CalendarModule, ConfirmDialogModule, ConfirmationService} from 'primeng/primeng';
+import { DataTableModule, SharedModule, DropdownModule, InputMaskModule, CalendarModule, ConfirmDialogModule, ConfirmationService, MessagesModule} from 'primeng/primeng';
 import { ManagersComponent } from './managers/managers.component';
 
 // Define the routes
@@ -48,7 +48,9 @@ const appRoutes: Routes = [
     SharedModule,
     InputMaskModule,
     CalendarModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    DropdownModule,
+    MessagesModule
   ],
   providers: [CollaboratersService, ManagersService],
   bootstrap: [AppComponent]

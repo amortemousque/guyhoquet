@@ -1,0 +1,140 @@
+
+.bs-docs-header h1 {
+  margin-top: 0;
+  color: #fff;
+}
+.bs-docs-header p {
+  margin-bottom: 0;
+  font-weight: 300;
+  line-height: 1.4;
+}
+.bs-docs-header .container {
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .bs-docs-header {
+    padding-top: 60px;
+    padding-bottom: 60px;
+    font-size: 24px;
+    text-align: left;
+  }
+  .bs-docs-header h1 {
+    font-size: 60px;
+    line-height: 1;
+  }
+}
+
+@media (min-width: 992px) {
+  .bs-docs-header h1,
+  .bs-docs-header p {
+    margin-right: 380px;
+  }
+}
+
+.bs-docs-header, .bs-docs-masthead {
+    position: relative;
+    padding: 30px 0;
+    color: #A5B5E0;
+    text-shadow: 0 1px 0 rgba(0,0,0,.1);
+    background-color: #324E99;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#1B3785),to(#324E99));
+    background-image: -webkit-linear-gradient(top,#1B3785 0,#324E99 100%);
+    background-image: -o-linear-gradient(top,#1B3785 0,#324E99 100%);
+    background-image: linear-gradient(to bottom,#1B3785 0,#324E99 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1B3785', endColorstr='#324E99', GradientType=0);
+    background-repeat: repeat-x;
+}
+
+.ui-calendar input {
+  width: 96px;
+}
+
+.ui-calendar input {
+  width: 96px;
+}
+
+
+input.ng-valid[required], input.ng-valid.required  {
+  border-left: 3px solid #42A948; /* green */
+}
+
+input.ng-invalid:not(form)  {
+  border-left: 3px solid #a94442; /* red */
+}
+
+
+p-dropdown.ng-valid[required] .ui-dropdown-label, p-dropdown.ng-valid.required .ui-dropdown-label {
+  border-left: 3px solid #42A948; /* green */
+}
+
+p-dropdown.ng-invalid:not(form) .ui-dropdown-label  {
+  border-left: 3px solid #a94442; /* red */
+}
+
+
+p-inputmask.ui-inputtext.ng-valid[required] input, p-inputmask.ui-inputtext.ng-valid.required input {
+  border-left: 3px solid #42A948; /* green */
+}
+
+p-inputmask.ui-inputtext.ng-invalid:not(form) input  {
+  border-left: 3px solid #a94442; /* red */
+}
+
+p-calendar.ng-valid[required] input, p-calendar.ng-valid.required input {
+  border-left: 3px solid #42A948; /* green */
+}
+
+p-calendar.ng-invalid:not(form) input  {
+  border-left: 3px solid #a94442; /* red */
+}
+
+
+body p-inputmask.ui-inputtext {
+  border:none;
+  padding: 0px;
+}
+
+
+/*****table******/
+.ui-datatable-tablewrapper {
+  .ui-datatable-thead th {
+    text-align: left;
+
+  }
+  .ui-column-title {
+    font-weight: bold;
+  }
+
+}
+.ui-datatable .ui-datatable-data > tr > td {
+    border-left: 0px !important;
+    border-right: 0px !important;
+    border-color: #ddd;
+}
+body .ui-datatable .ui-paginator {
+    border: 0px;
+}
+
+body .ui-datatable .ui-datatable-data tr.ui-datatable-even {
+    background-color: #fff;
+}
+
+body .ui-datatable .ui-widget-content {
+    border: 0px;
+}
+
+body .ui-datatable .ui-datatable-thead > tr > th {
+    border-top:0px;
+    border-right:0px;
+    border-left:0px;
+}
+
+body .ui-paginator .ui-paginator-pages .ui-paginator-page {
+  background: none;
+  color:#333;
+}
+
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
+  color: #0275d8;
+}

@@ -1,9 +1,10 @@
 export interface Collaborater {
     id;
+    gender;
     firstName;
     lastName;
     birthDate;
-    job;
+    title;
     email;
     phone;
     userId;
