@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import {NgForm } from '@angular/forms';
 
 import { CollaboratersService } from '../collaboraters.service';
+import { ManagersService } from '../managers.service';
 import { DataTableModule, SharedModule, InputMaskModule, CalendarModule} from 'primeng/primeng';
 import { Collaborater } from '../model/collaborater';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {ConfirmDialogModule,ConfirmationService, SelectItem} from 'primeng/primeng';
 
 import 'rxjs/add/operator/toPromise';
@@ -18,6 +19,7 @@ import 'rxjs/add/operator/toPromise';
 export class CollaboratersComponent implements OnInit {
   token: string;
   load: boolean = false;
+  manager: any = {name: ''};
   titles: SelectItem[];
   gender: SelectItem[];
   errorMsgs: any = [];
@@ -25,7 +27,7 @@ export class CollaboratersComponent implements OnInit {
   submitted: any = false;
   collaboraters: Collaborater[];
   fr: any;
-  constructor(private collaboratersService: CollaboratersService, private route: ActivatedRoute, private confirmationService: ConfirmationService) { }
+  constructor(private collaboratersService: CollaboratersService, private managerService: ManagersService, private router: Router ,private route: ActivatedRoute, private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
     this.fr = {
@@ -50,6 +52,15 @@ export class CollaboratersComponent implements OnInit {
 
     this.route.params.subscribe(params => {
        this.token = params['token']; // (+) converts string 'id' to a number
+        this.managerService.getManager(this.token).subscribe(manager => {
+
+          if(manager.id != undefined) {
+            this.manager = manager;
+          } else {
+            this.router.navigate(['/page-not-found']);
+          }
+          console.log(this.manager);
+        });
         this.collaboratersService.getAllCollaboraters(this.token).subscribe(collaboraters => {
           this.collaboraters = collaboraters;
           console.log(this.collaboraters);

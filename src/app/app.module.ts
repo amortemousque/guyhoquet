@@ -12,6 +12,8 @@ import { AccordionModule } from 'primeng/primeng';
 import { MenuItem } from 'primeng/primeng';
 import { DataTableModule, SharedModule, DropdownModule, InputMaskModule, CalendarModule, ConfirmDialogModule, ConfirmationService, MessagesModule} from 'primeng/primeng';
 import { ManagersComponent } from './managers/managers.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { HeaderComponent } from './header/header.component';
 
 // Define the routes
 const appRoutes: Routes = [
@@ -23,13 +25,8 @@ const appRoutes: Routes = [
     path: 'managers/:token',
     component: ManagersComponent
   },
-  {
-    path: '',
-    redirectTo: 'collaboraters/',
-    pathMatch: 'full'
-  }
-  // ,
-  // { path: '**', component: PageNotFoundComponent }
+  { path: 'page-not-found', component: PageNotFoundComponent },
+  { path: '**', component: PageNotFoundComponent }
 ];
 
 
@@ -37,7 +34,9 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     CollaboratersComponent,
-    ManagersComponent
+    ManagersComponent,
+    PageNotFoundComponent,
+    HeaderComponent
   ],
   imports: [
     RouterModule.forRoot(appRoutes), // Add routes to the app

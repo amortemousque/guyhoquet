@@ -13,7 +13,7 @@ var connection = mysql.createConnection({
   database: 'guyhoquet'
 });
 
-router.use(function(req, res, next){
+router.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -21,11 +21,11 @@ router.use(function(req, res, next){
 })
 
 /* GET api listing. */
-router.get('/', (req, res) => {
+router.get('/', function(req, res) {
   res.send('api works');
 });
 
-router.get('/collaboraters', (req, res) => {
+router.get('/collaboraters', function(req, res) {
     connection.query('SELECT * from collaborater', function(err, rows, fields) {
       if (err) throw err;
       console.log('The solution is: ', rows);
@@ -35,7 +35,7 @@ router.get('/collaboraters', (req, res) => {
     });
 });
 
-router.get('/collaboraters/:token', (req, res) => {
+router.get('/collaboraters/:token', function(req, res) {
     console.log('The user token: ', req.params.token);
 
     connection.query("SELECT * from user where token='"+req.params.token+"'", function(err, rows, fields) {
@@ -56,7 +56,7 @@ router.get('/collaboraters/:token', (req, res) => {
     });
 });
 
-router.get('/managers/:token', (req, res) => {
+router.get('/managers/:token', function(req, res) {
     console.log('The user token: ', req.params.token);
 
     connection.query("SELECT * from user where roleId=1 and token='"+req.params.token+"'", function(err, rows, fields) {
@@ -74,6 +74,20 @@ router.get('/managers/:token', (req, res) => {
       } else {
         res.status(200).json(rows);
       }
+    });
+});
+
+router.get('/manager/:token', function(req, res) {
+    console.log('The user token: ', req.params.token);
+
+    connection.query("SELECT * from user where roleId=2 and token='"+req.params.token+"'", function(err, rows, fields) {
+      if (err) throw err;
+      console.log('The user is: ', rows);
+        var user = {};
+        if(rows.length > 0) {
+         user = rows[0];
+        }
+        res.status(200).json(user);
     });
 });
 
@@ -116,7 +130,7 @@ function send(user) {
 }
 
 
-router.get('/sendMail/:id', (req, res) => {
+router.get('/sendMail/:id', function(req, res) {
     console.log('The user token: ', req.params.id);
 
     connection.query("SELECT * FROM user WHERE roleId=2 and id='"+req.params.id+"'", function(err, rows, fields) {
@@ -128,7 +142,7 @@ router.get('/sendMail/:id', (req, res) => {
     });
 });
 
-router.get('/sendMails/', (req, res) => {
+router.get('/sendMails/', function(req, res) {
     console.log('The user token: ', req.params.id);
 
     connection.query("SELECT * FROM user WHERE roleId=2 AND hasValidList=0", function(err, rows, fields) {
@@ -144,7 +158,7 @@ router.get('/sendMails/', (req, res) => {
 });
 
 
-router.put('/validateList/:token', (req, res) => {
+router.put('/validateList/:token', function(req, res) {
     console.log('toto: ', req.body);
 
     connection.query("SELECT * from user where token='"+req.params.token+"'", function(err, rows, fields) {
@@ -159,7 +173,7 @@ router.put('/validateList/:token', (req, res) => {
               collaboraters.forEach(function(collaborater) {
                 collaborater.birthDate = collaborater.birthDate.toLocaleString();
                 if(collaboraters.firstName != "" && collaboraters.LastName != "" && collaboraters.BirthDate != "" && collaboraters.job != "" ) {
-                  let birthDate = dateformat(collaborater.birthDate, "yyyy-mm-dd h:MM:ss");
+                  var birthDate = dateformat(collaborater.birthDate, "yyyy-mm-dd h:MM:ss");
                   connection.query("INSERT INTO collaborater (gender, firstName, lastName, birthDate, title, email, phone, userId) VALUES ('"+collaborater.gender+"', '"+collaborater.firstName+"', '"+collaborater.lastName+"', '"+ birthDate +"', '"+collaborater.title+"', '"+collaborater.email+"' , '"+collaborater.phone+"', '"+user.id+"')", function(err, rows, fields) {
                         if (err) throw err;
                     });
@@ -182,7 +196,7 @@ router.put('/validateList/:token', (req, res) => {
 });
 
 //create
-router.post('/collaboraters', (req, res) => {
+router.post('/collaboraters', function(req, res) {
           console.log('The user is: ', req.body);
 
     connection.query("INSERT INTO collaborater (firstName, lastName, birthDate, job, email, phone, userId) VALUES ('"+req.body.firstName+"', '"+req.body.lastName+"', '"+req.body.birthDate+"', '"+req.body.job+"', '"+req.body.email+"' , '"+req.body.phone+"', '"+req.body.userId+"')",
@@ -193,7 +207,7 @@ router.post('/collaboraters', (req, res) => {
 });
 
 //update
-router.put('/collaboraters/:id', (req, res) => {
+router.put('/collaboraters/:id', function(req, res) {
     console.log('The user is: ', req.body);
     connection.query("UPDATE collaborater set firstName = '"+req.body.firstName+"', lastName = '"+req.body.lastName+"' where id='"+req.params.id+"'", function(err, rows, fields) {
       if (err) throw err;
@@ -202,7 +216,7 @@ router.put('/collaboraters/:id', (req, res) => {
     });
 });
 
-router.delete('/collaboraters/:id', (req, res) => {
+router.delete('/collaboraters/:id', function(req, res) {
     connection.query("DELETE FROM collaborater where id = '"+req.params.id+"'", function(err, rows, fields) {
       if (err) throw err;
       res.json({ message: 'Collaborater deleted!' });

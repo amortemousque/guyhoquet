@@ -55,6 +55,14 @@
 }
 
 
+@media (min-width: 992px) {
+  .bs-docs-header h1, .bs-docs-header p {
+      margin-right:140px;
+  }
+}
+
+
+
 input.ng-valid[required], input.ng-valid.required  {
   border-left: 3px solid #42A948; /* green */
 }
@@ -137,4 +145,8 @@ body .ui-paginator .ui-paginator-pages .ui-paginator-page {
 
 body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
   color: #0275d8;
+}
+
+.ui-inputtext, .ui-dropdown-label {
+  width: 100%;
 }
