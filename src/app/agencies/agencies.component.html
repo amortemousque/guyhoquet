@@ -1,31 +1,33 @@
+<app-side-menu></app-side-menu>
+
 <app-header [title]="'Guy Hoquet'"></app-header>
 <div class="container">
 
-  <h1 class="page-header" id="overview">Manageurs</h1>
-  <p-dataTable [value]="managers" [rows]="10" [paginator]="true" [pageLinks]="3" [rowsPerPageOptions]="[5,10,20]">
+  <h1 class="page-header" id="overview">Agences</h1>
+  <p-dataTable [value]="agencies" [rows]="10" [paginator]="true" [pageLinks]="3" [rowsPerPageOptions]="[5,10,20]">
       <p-column field="name" header="Nom" [editable]="true"  [sortable]="true"> </p-column>
       <p-column field="phone" header="Téléphone" [editable]="true"  [sortable]="true"></p-column>
       <p-column field="mail" header="Mail" [editable]="true"  [sortable]="true"></p-column>
       <p-column field="address" header="Adresse" [editable]="true"  [sortable]="true"></p-column>
       <p-column field="hasValidList" header="Liste validée" [editable]="true" [sortable]="true">
-        <template let-col let-manager="rowData" pTemplate="body">
+        <template let-col let-agency="rowData" pTemplate="body">
           <div style="text-align:center">
-            <i class="fa fa-times fa-2x text-danger" [hidden]="manager.hasValidList"></i>
-            <i class="fa fa-check fa-2x text-success" [hidden]="!manager.hasValidList"></i>
+            <i class="fa fa-times fa-2x text-danger" [hidden]="agency.hasValidList"></i>
+            <i class="fa fa-check fa-2x text-success" [hidden]="!agency.hasValidList"></i>
           </div>
         </template>
       </p-column>
       <p-column field="address" header="Mail envoyé" [editable]="true"  [sortable]="true">
-        <template let-col let-manager="rowData" pTemplate="body">
+        <template let-col let-agency="rowData" pTemplate="body">
           <div style="text-align:center">
-          <span class="text-success" [hidden]="!manager.token">Oui</span>
-          <span class="text-danger" [hidden]="manager.token">Non</span>
+          <span class="text-success" [hidden]="!agency.token">Oui</span>
+          <span class="text-danger" [hidden]="agency.token">Non</span>
           </div>
         </template>
       </p-column>
       <p-column  header="">
-        <template let-col let-manager="rowData" pTemplate="body">
-          <button pButton icon="fa-send" iconPos="left" (click)="sendMail(manager)"></button>
+        <template let-col let-agency="rowData" pTemplate="body">
+          <button pButton icon="fa-send" iconPos="left" (click)="sendMail(agency)"></button>
         </template>
       </p-column>
   </p-dataTable>

@@ -1,17 +1,93 @@
 const express = require('express');
-var nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const dateformat = require('dateformat');
+const Sequelize = require('sequelize');
+const multer  = require('multer')
+const csvtojson = require('csvtojson')
+const json2csv = require('json2csv');
+const fs = require('fs');
 
 const router = express.Router();
 
-var mysql      = require('mysql');
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : '',
-  database: 'guyhoquet'
+
+var sequelize = new Sequelize('guyhoquet2', 'root', 'password',  {
+  host: 'localhost',
+  dialect: 'mysql'
 });
+
+
+var Agency = sequelize.define('agency', {
+  id : {type:Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+  name: Sequelize.STRING,
+  managers: Sequelize.STRING,
+  hasValidList: Sequelize.BOOLEAN,
+  listValidationDate: Sequelize.DATE,
+  token: Sequelize.STRING,
+  phone: Sequelize.STRING,
+  mail: {
+    type: Sequelize.STRING,
+    isEmail: true,
+    isDate: true
+  },
+  address: Sequelize.STRING,
+  code: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  postalCode: Sequelize.STRING,
+  city: Sequelize.STRING,
+  mailDate: Sequelize.STRING,
+  openingDate: Sequelize.DATE,
+  status: Sequelize.STRING,
+  reference: Sequelize.STRING,
+  contractNumber: Sequelize.INTEGER
+},
+{  freezeTableName: true,
+});
+
+var Collaborater = sequelize.define('collaborater', {
+  id: {type:Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+  firstName: Sequelize.STRING,
+  lastName: Sequelize.STRING,
+  birthDate: Sequelize.DATE,
+  job: Sequelize.STRING,
+  email: Sequelize.STRING,
+  phone: Sequelize.STRING,
+  gender: Sequelize.STRING,
+  title: Sequelize.STRING
+},
+{  freezeTableName: true,
+},
+{
+
+  instanceMethods: {
+    birthDateFr: function() {
+      if(this.birthDate != null || this.birthDate != "")
+        return dateformat(this.birthDate, "dd/mm/yyyy h:MM:ss");
+      else
+      return "";
+    }
+  }
+});
+
+var Role = sequelize.define('role', {
+  id : {type:Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+  name: Sequelize.STRING
+},
+{  freezeTableName: true,
+});
+
+
+Agency.belongsTo(Role);
+Collaborater.belongsTo(Agency);
+
+
+// Create the tables:
+Role.sync();
+Agency.sync();
+Collaborater.sync();
+
 
 router.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -20,97 +96,103 @@ router.use(function(req, res, next) {
   next();
 })
 
+
+
 /* GET api listing. */
 router.get('/', function(req, res) {
   res.send('api works');
 });
 
-router.get('/collaboraters', function(req, res) {
-    connection.query('SELECT * from collaborater', function(err, rows, fields) {
-      if (err) throw err;
-      console.log('The solution is: ', rows);
-
-      res.status(200).json(rows);
-     // console.log('The solution is: ', rows[0].id);
-    });
-});
 
 router.get('/collaboraters/:token', function(req, res) {
-    console.log('The user token: ', req.params.token);
+    console.log('The agency token: ', req.params.token);
 
-    connection.query("SELECT * from user where token='"+req.params.token+"'", function(err, rows, fields) {
-      if (err) throw err;
-      console.log('The user is: ', rows);
-      if(rows.length > 0) {
-        var user = rows[0];
-        connection.query("SELECT * from collaborater where userId='"+user.id+"'", function(err, rows, fields) {
-          if (err) throw err;
-          console.log('The solution is: ', rows);
+    Agency.findOne({ where: { token: req.params.token } })
+    .then(function(agency){
+      return Collaborater.findAll({ where: {
+        agencyId: agency.id
+      }});
+    }).then(function(collaboraters){
+      res.status(200).json(collaboraters);
+    });
 
-          res.status(200).json(rows);
-        // console.log('The solution is: ', rows[0].id);
-        });
-      } else {
-        res.status(200).json(rows);
-      }
+});
+
+router.get('/agencies/:token', function(req, res) {
+    console.log('The agency token: ', req.params.token);
+    Agency.findOne({ where: { roleId:1, token: req.params.token } })
+    .then(function(agency){
+      return Agency.findAll({where:{roleId:2}});
+    }).then(function(agencies){
+      res.status(200).json(agencies);
     });
 });
 
-router.get('/managers/:token', function(req, res) {
-    console.log('The user token: ', req.params.token);
-
-    connection.query("SELECT * from user where roleId=1 and token='"+req.params.token+"'", function(err, rows, fields) {
+router.get('/agency/:token', function(req, res) {
+    Agency.findOne({ where: { roleId:2, token: req.params.token} }).then(function() {
       if (err) throw err;
-      console.log('The user is: ', rows);
-      if(rows.length > 0) {
-        var user = rows[0];
-        connection.query("SELECT * from user where roleId=2", function(err, rows, fields) {
-          if (err) throw err;
-          console.log('The solution is: ', rows);
-
-          res.status(200).json(rows);
-        // console.log('The solution is: ', rows[0].id);
-        });
-      } else {
-        res.status(200).json(rows);
-      }
-    });
-});
-
-router.get('/manager/:token', function(req, res) {
-    console.log('The user token: ', req.params.token);
-
-    connection.query("SELECT * from user where roleId=2 and token='"+req.params.token+"'", function(err, rows, fields) {
-      if (err) throw err;
-      console.log('The user is: ', rows);
-        var user = {};
+        var agency = {};
         if(rows.length > 0) {
-         user = rows[0];
+         agency = rows[0];
         }
-        res.status(200).json(user);
+        res.status(200).json(agency);
     });
 });
 
 
-function send(user) {
+router.put('/validateList/:token', function(req, res) {
+    console.log('toto: ', req.body);
+
+    Agency.findOne({ where: { token: req.params.token } })
+    .then(function(agency) {
+
+      Collaborater.destroy({
+        where: {
+          agencyId: agency.id
+        }
+      }).then(function(){
+        var collaboraters = req.body;
+        collaboraters.forEach(function(collaborater) {
+          collaborater.id = undefined;
+          collaborater.agencyId = agency.id;
+        });
+        return Collaborater
+          .bulkCreate(collaboraters);
+      }).then(function(){
+        var dateNow = dateformat(new Date(), "yyyy-mm-dd h:MM:ss");
+        return Agency.update(
+              { listValidationDate: dateNow, hasValidList: 1 },
+              { where: { id: agency.id } }
+          );
+      }).then(function(){
+          res.json({ message: 'Collaboraters created!' });
+      }).catch(function(error) {
+        console.log(error);
+        // whooops
+      });
+    })
+});
+
+
+function send(agency) {
    require('crypto').randomBytes(48, function(err, buffer) {
-        var token = buffer.toString('hex') + user.id;
+        var token = buffer.toString('hex') + agency.id;
         console.log("token : "+token);
         var dateNow = dateformat(new Date(), "yyyy-mm-dd h:MM:ss");
-        connection.query("UPDATE user set token = '"+token+"', mailDate='"+dateNow+"' where id='"+user.id+"'", function(err, rows, fields) {
+        connection.query("UPDATE agency set token = '"+token+"', mailDate='"+dateNow+"' where id='"+user.id+"'", function(err, rows, fields) {
 
           // Not the movie transporter!
           var transporter = nodemailer.createTransport({
               service: 'Gmail',
               auth: {
-                  user: 'aymeric.mortemousque@gmail.com', // Your email id
+                  agency: 'aymeric.mortemousque@gmail.com', // Your email id
                   pass: 'jhLiexc7' // Your password
               }
           });
 
           var mailOptions = {
               from: 'aymeric.mortemousque@gmail.com', // sender address
-              to: user.mail, // list of receivers
+              to: agency.mail, // list of receivers
               subject: 'Email Example', // Subject line
               text: 'Hello world from \n\n' //, // plaintext body
               // html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
@@ -131,97 +213,165 @@ function send(user) {
 
 
 router.get('/sendMail/:id', function(req, res) {
-    console.log('The user token: ', req.params.id);
+    console.log('The agency token: ', req.params.id);
 
-    connection.query("SELECT * FROM user WHERE roleId=2 and id='"+req.params.id+"'", function(err, rows, fields) {
+    connection.query("SELECT * FROM agency WHERE roleId=2 and id='"+req.params.id+"'", function(err, rows, fields) {
       if (err) throw err;
-      console.log('The user is: ', rows);
-      var user = rows[0];
-      send(user);
+      console.log('The agency is: ', rows);
+      var agency = rows[0];
+      send(agency);
       res.json({message: "mails send"});
     });
 });
 
 router.get('/sendMails/', function(req, res) {
-    console.log('The user token: ', req.params.id);
+    console.log('The agency token: ', req.params.id);
 
-    connection.query("SELECT * FROM user WHERE roleId=2 AND hasValidList=0", function(err, rows, fields) {
+    connection.query("SELECT * FROM agency WHERE roleId=2 AND hasValidList=0", function(err, rows, fields) {
       if (err) throw err;
-      console.log('The user is: ', rows);
-      var users = rows;
+      console.log('The agency is: ', rows);
+      var agencies = rows;
 
-      users.forEach(function(user){
-        send(user);
+      agencies.forEach(function(agency){
+        send(agency);
       });
       res.json({message: "mails send"});
     });
 });
 
 
-router.put('/validateList/:token', function(req, res) {
-    console.log('toto: ', req.body);
+var storage =   multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, './server/uploads');
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.fieldname + '-' + Date.now() + ".csv");
+  }
+});
 
-    connection.query("SELECT * from user where token='"+req.params.token+"'", function(err, rows, fields) {
-      var user = rows[0];
-
-      var collaboraters = req.body;
-      if(collaboraters.length > 0) {
-        connection.query("DELETE FROM collaborater WHERE userId='"+user.id+"'", function(err, rows, fields) {
-              if (err) throw err;
-                console.log('The user is: ', user);
-
-              collaboraters.forEach(function(collaborater) {
-                collaborater.birthDate = collaborater.birthDate.toLocaleString();
-                if(collaboraters.firstName != "" && collaboraters.LastName != "" && collaboraters.BirthDate != "" && collaboraters.job != "" ) {
-                  var birthDate = dateformat(collaborater.birthDate, "yyyy-mm-dd h:MM:ss");
-                  connection.query("INSERT INTO collaborater (gender, firstName, lastName, birthDate, title, email, phone, userId) VALUES ('"+collaborater.gender+"', '"+collaborater.firstName+"', '"+collaborater.lastName+"', '"+ birthDate +"', '"+collaborater.title+"', '"+collaborater.email+"' , '"+collaborater.phone+"', '"+user.id+"')", function(err, rows, fields) {
-                        if (err) throw err;
-                    });
-                }
-              }, this);
-
-              var dateNow = dateformat(new Date(), "yyyy-mm-dd h:MM:ss");
-              connection.query("UPDATE user set hasValidList = 1, listValidationDate='"+ dateNow +"' WHERE id='"+user.id+"'", function(err, rows, fields) {
-                if (err) throw err;
-              });
-              res.json({ message: 'Collaboraters created!' });
-
-        });
-
+function parseFrDate(st) {
+      if(st != "") {
+        var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
+        var dt = new Date(st.replace(pattern,'$3-$2-$1'));
       } else {
-          res.json({ message: 'No action!' });
+        var dt = null;
       }
+      return dt;
+}
+
+
+router.post('/uploadAgencies/', function(req, res) {
+  var upload = multer({ storage : storage}).single('agenciesUpload');
+    upload(req,res,function(err) {
+        if(err) {
+            return res.end("Error uploading file.");
+        }
+        var agencyToInsert = [];
+        Agency.findAll()
+        .then(function(agencies) {
+
+          csvtojson({
+              noheader: false,
+              trim: true,
+              delimiter: ";"
+          })
+          .fromFile("./server/uploads/"+res.req.file.filename)
+          .on('json',function(jsonRow) {
+              let agencyBdd = agencies.filter(function(agencyBdd) { return agencyBdd.code == jsonRow.code; });
+              if(agencyBdd.length == 0) {
+                jsonRow.openingDate = parseFrDate(jsonRow.openingDate );
+                agencyToInsert.push(jsonRow);
+              }
+
+          })
+          .on('done', function(error) {
+              if(error == undefined) {
+                Agency.bulkCreate(agencyToInsert, { validate: true })
+                .then(function(){
+                    res.json({success:true, message: "Import success"});
+                })
+                .catch(function(errors){
+                    res.json({success:false, message: "Import error"});
+                });
+              } else {
+                res.json({success:false, message: "Import error"});
+              }
+          });
+
+        }).catch(function (err) {
+            res.json({success:false, message: "Import error"});
+        });
     });
+});
+
+
+
+router.post('/uploadCollaboraters/', function(req, res) {
+    var upload = multer({ storage : storage}).single('collaboratersUpload');
+    upload(req,res,function(err) {
+        if(err) {
+            return res.end("Error uploading file.");
+        }
+        var collaboratersToInsert = [];
+        var agencyP = Agency.findAll();
+        var collaboraterP = Collaborater.findAll();
+
+        Promise.all([agencyP, collaboraterP])
+        .then(function(values){
+            var agencies = values[0];
+            var collaboraters = values[1];
+            csvtojson({
+                noheader: false,
+                trim: true,
+                delimiter: ";"
+            })
+            .fromFile("./server/uploads/"+res.req.file.filename)
+            .on('json',function(jsonRow) {
+                let agencyBdd = agencies.filter(function(agencyBdd) { return agencyBdd.code == jsonRow.code; });
+                let collaboraterBdd = collaboraters.filter(function(collaboraterBdd) { return collaboraterBdd.email == jsonRow.email; });
+
+                if(agencyBdd.length > 0 && collaboraterBdd.length == 0) {
+                  jsonRow.birthDate = parseFrDate(jsonRow.birthDate);
+                  jsonRow.agencyId = agencyBdd[0].id;
+                  collaboratersToInsert.push(jsonRow);
+                }
+            })
+            .on('done', function(error) {
+                if(error == undefined) {
+                  Collaborater.bulkCreate(collaboratersToInsert, { validate: true })
+                  .then(function(){
+                      res.json({success:true, message: "Import success"});
+                  })
+                  .catch(function(errors){
+                      res.json({success:false, message: "Import error"});
+                  });
+                } else {
+                  res.json({success:false, message: "Import error"});
+                }
+            });
+
+          }).catch(function (err) {
+            res.json({success:false, message: "Import error"});
+          });
+    });
+});
+
+
+
+router.get('/downloadCollaboraters/:token', function(req, res) {
+  Collaborater.findAll()
+      .then(function(collaboraters){
+          var fields = ['firstName', 'lastName', 'birthDate', 'email', 'phone', 'title'];
+          collaboraters.forEach(function(element) {
+            if(element.dataValues.birthDate != "")
+              element.dataValues.birthDate = dateformat(element.dataValues.birthDate, "dd/mm/yyyy h:MM:ss");
+          }, this);
+          var csv = json2csv({ data: collaboraters, fields: fields, del: ';' });
+          res.attachment('collaborateurs.csv');
+          res.status(200).send(csv);
+      });
 
 });
 
-//create
-router.post('/collaboraters', function(req, res) {
-          console.log('The user is: ', req.body);
-
-    connection.query("INSERT INTO collaborater (firstName, lastName, birthDate, job, email, phone, userId) VALUES ('"+req.body.firstName+"', '"+req.body.lastName+"', '"+req.body.birthDate+"', '"+req.body.job+"', '"+req.body.email+"' , '"+req.body.phone+"', '"+req.body.userId+"')",
-    function(err, rows, fields) {
-      if (err) throw err;
-      res.json({ message: 'Collaborater created!' });
-    });
-});
-
-//update
-router.put('/collaboraters/:id', function(req, res) {
-    console.log('The user is: ', req.body);
-    connection.query("UPDATE collaborater set firstName = '"+req.body.firstName+"', lastName = '"+req.body.lastName+"' where id='"+req.params.id+"'", function(err, rows, fields) {
-      if (err) throw err;
-      res.json({ message: 'Collaborater updated!' });
-
-    });
-});
-
-router.delete('/collaboraters/:id', function(req, res) {
-    connection.query("DELETE FROM collaborater where id = '"+req.params.id+"'", function(err, rows, fields) {
-      if (err) throw err;
-      res.json({ message: 'Collaborater deleted!' });
-
-    });
-});
 
 module.exports = router;

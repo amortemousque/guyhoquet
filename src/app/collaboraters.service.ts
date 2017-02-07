@@ -13,7 +13,7 @@ export class CollaboratersService {
   constructor(private http: Http) { }
 
   getAllCollaboraters(token) {
-    return this.http.get('/api/collaboraters/'+ token)
+    return this.http.get('http://localhost:8000/api/collaboraters/'+ token)
                         // .map(res => <Collaborater[]> res.json());
                     .map(res => {return this.extractData(res);});
   }
@@ -28,7 +28,7 @@ export class CollaboratersService {
   }
 
   validateList(token, collaboraters) {
-       return this.http.put('/api/validateList/' + token, collaboraters)
+       return this.http.put('http://localhost:8000/api/validateList/' + token, collaboraters)
                         .map(res => <Collaborater> res.json())
                         .catch((error:any) => Observable.throw(error.json().error || 'Server error')); //...errors if any
 

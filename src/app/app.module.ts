@@ -7,23 +7,30 @@ import { RouterModule, Routes } from '@angular/router';
 import { AppComponent } from './app.component';
 import { CollaboratersComponent } from './collaboraters/collaboraters.component';
 import { CollaboratersService } from './collaboraters.service';
-import { ManagersService } from './managers.service';
+import { AgenciesService } from './agencies.service';
 import { AccordionModule } from 'primeng/primeng';
-import { MenuItem } from 'primeng/primeng';
-import { DataTableModule, SharedModule, DropdownModule, InputMaskModule, CalendarModule, ConfirmDialogModule, ConfirmationService, MessagesModule} from 'primeng/primeng';
-import { ManagersComponent } from './managers/managers.component';
+import { MenuItem, MenuModule } from 'primeng/primeng';
+import { DataTableModule, SharedModule, FileUploadModule, DropdownModule, InputMaskModule, CalendarModule, ConfirmDialogModule, ConfirmationService, MessagesModule} from 'primeng/primeng';
+
+import { AgenciesComponent } from './agencies/agencies.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { HeaderComponent } from './header/header.component';
+import { SettingsComponent } from './settings/settings.component';
+import { SideMenuComponent } from './side-menu/side-menu.component';
 
 // Define the routes
 const appRoutes: Routes = [
+  {
+    path: 'settings/:token',
+    component: SettingsComponent
+  },
   {
     path: 'collaboraters/:token',
     component: CollaboratersComponent
   },
   {
-    path: 'managers/:token',
-    component: ManagersComponent
+    path: 'agencies/:token',
+    component: AgenciesComponent
   },
   { path: 'page-not-found', component: PageNotFoundComponent },
   { path: '**', component: PageNotFoundComponent }
@@ -34,9 +41,11 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     CollaboratersComponent,
-    ManagersComponent,
+    AgenciesComponent,
     PageNotFoundComponent,
-    HeaderComponent
+    HeaderComponent,
+    SettingsComponent,
+    SideMenuComponent
   ],
   imports: [
     RouterModule.forRoot(appRoutes), // Add routes to the app
@@ -49,9 +58,11 @@ const appRoutes: Routes = [
     CalendarModule,
     ConfirmDialogModule,
     DropdownModule,
-    MessagesModule
+    MessagesModule,
+    FileUploadModule,
+    MenuModule,
   ],
-  providers: [CollaboratersService, ManagersService],
+  providers: [CollaboratersService, AgenciesService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

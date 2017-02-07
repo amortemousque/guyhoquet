@@ -1,0 +1,10 @@
+<app-side-menu></app-side-menu>
+<app-header [title]="'Guy Hoquet'"></app-header>
+
+<div class="container">
+  <h2>Upload agences</h2>
+  <p-fileUpload name="agenciesUpload" url="http://localhost:8000/api/uploadAgencies" accept="csv/*"></p-fileUpload>
+
+  <h2>Upload collaborateurs</h2>
+  <p-fileUpload name="collaboratersUpload" url="http://localhost:8000/api/uploadCollaboraters" accept="csv/*"></p-fileUpload>
+</div>
