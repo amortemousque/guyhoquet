@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AgenciesService } from '../agencies.service';
+import { CollaboratersService } from '../collaboraters.service';
+
 import { DataTableModule, SharedModule, InputMaskModule, CalendarModule, ConfirmationService} from 'primeng/primeng';
 import { Agency } from '../model/agency';
 import { ActivatedRoute } from '@angular/router';
+import * as FileSaver from 'file-saver';
+
 
 import 'rxjs/add/operator/toPromise';
 @Component({
@@ -17,7 +21,7 @@ export class AgenciesComponent implements OnInit {
   token: string;
   agencies: Agency[];
 
-  constructor(private agenciesService: AgenciesService, private route: ActivatedRoute, private confirmationService: ConfirmationService) { }
+  constructor(private agenciesService: AgenciesService, private collaboratersService: CollaboratersService, private route: ActivatedRoute, private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -27,6 +31,14 @@ export class AgenciesComponent implements OnInit {
         });
        // In a real app: dispatch action to load the details here.
     });
+  }
+
+  exportCollaboraters() {
+      this.collaboratersService.exportCollaboraters(this.token).subscribe(response => {
+       // console.log(result._body);
+        let blob = new Blob([response.text()], { type: 'text/csv' });
+        FileSaver.saveAs(blob, "collaborateurs.csv");
+      });
   }
 
   sendMail(agency) {

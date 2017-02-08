@@ -25,7 +25,7 @@ export class CollaboratersComponent implements OnInit {
   errorMsgs: any = [];
   validMsgs: any = [];
   submitted: any = false;
-  collaboraters: Collaborater[];
+  collaboraters: Collaborater[] = [];
   fr: any;
   constructor(private collaboratersService: CollaboratersService, private agenciesService: AgenciesService, private router: Router ,private route: ActivatedRoute, private confirmationService: ConfirmationService) { }
 
@@ -58,11 +58,15 @@ export class CollaboratersComponent implements OnInit {
           } else {
             this.router.navigate(['/page-not-found']);
           }
-          console.log(this.agency);
         });
         this.collaboratersService.getAllCollaboraters(this.token).subscribe(collaboraters => {
-          this.collaboraters = collaboraters;
-          console.log(this.collaboraters);
+          console.log(collaboraters);
+          collaboraters.forEach(element => {
+              if(element.birthDate != null) {
+                element.birthDate = new Date(element.birthDate);
+              }
+              this.collaboraters.push(element);
+          });
         });
     });
   }

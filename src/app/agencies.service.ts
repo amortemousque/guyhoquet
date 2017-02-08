@@ -23,6 +23,8 @@ export class AgenciesService {
                         .map(res => <Agency> res.json());
   }
 
+
+
   sendMail(id) {
     return this.http.get('http://localhost:8000/api/sendMail/' + id);
   }

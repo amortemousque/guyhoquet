@@ -19,35 +19,48 @@ var sequelize = new Sequelize('guyhoquet2', 'root', 'password',  {
 
 var Agency = sequelize.define('agency', {
   id : {type:Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-  name: Sequelize.STRING,
-  managers: Sequelize.STRING,
-  hasValidList: Sequelize.BOOLEAN,
-  listValidationDate: Sequelize.DATE,
-  token: Sequelize.STRING,
-  phone: Sequelize.STRING,
+  accountId : Sequelize.STRING, //Accountid
+  codeCrm : Sequelize.STRING, //codecrm
+  isActive : Sequelize.BOOLEAN, //Ensommeil
+  name: Sequelize.STRING, //NumClient
+  managers: Sequelize.STRING, //vide
+  hasValidList: Sequelize.BOOLEAN, //
+  listValidationDate: Sequelize.DATE,//
+  token: Sequelize.STRING, //vide
+  phone: Sequelize.STRING, //telephone1
+  codeSector:  Sequelize.STRING, //
+  sector: Sequelize.STRING, //
+  fax: Sequelize.STRING, //fax
+  ulCodeAgefos: Sequelize.STRING, //ul_code_agefos
   mail: {
     type: Sequelize.STRING,
     isEmail: true,
     isDate: true
-  },
-  address: Sequelize.STRING,
-  code: {
+  }, //mailAgence
+  mailManager: {
+    type: Sequelize.STRING,
+    isEmail: true,
+    isDate: true
+  }, //maildirecteur
+  address: Sequelize.STRING, //adresse
+  codeHoquet: {
     type: Sequelize.STRING,
     allowNull: false
-  },
-  postalCode: Sequelize.STRING,
-  city: Sequelize.STRING,
-  mailDate: Sequelize.STRING,
-  openingDate: Sequelize.DATE,
-  status: Sequelize.STRING,
-  reference: Sequelize.STRING,
-  contractNumber: Sequelize.INTEGER
+  }, //codeHoquet
+  department: Sequelize.STRING,// departement
+  postalCode: Sequelize.STRING,//CodePostal
+  city: Sequelize.STRING, //ville
+  siren: Sequelize.STRING, //siren
+  mailDate: Sequelize.STRING, //vide
+  openingDate: Sequelize.DATE, //dateOuverture
+  closingDate: Sequelize.DATE //datefermeture
 },
 {  freezeTableName: true,
 });
 
-var Collaborater = sequelize.define('collaborater', {
+var Collaborator = sequelize.define('collaborator', {
   id: {type:Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+  contactId: Sequelize.STRING,
   firstName: Sequelize.STRING,
   lastName: Sequelize.STRING,
   birthDate: Sequelize.DATE,
@@ -80,13 +93,13 @@ var Role = sequelize.define('role', {
 
 
 Agency.belongsTo(Role);
-Collaborater.belongsTo(Agency);
+Collaborator.belongsTo(Agency);
 
 
 // Create the tables:
 Role.sync();
 Agency.sync();
-Collaborater.sync();
+Collaborator.sync();
 
 
 router.use(function(req, res, next) {
@@ -104,16 +117,16 @@ router.get('/', function(req, res) {
 });
 
 
-router.get('/collaboraters/:token', function(req, res) {
+router.get('/collaborators/:token', function(req, res) {
     console.log('The agency token: ', req.params.token);
 
     Agency.findOne({ where: { token: req.params.token } })
     .then(function(agency){
-      return Collaborater.findAll({ where: {
+      return Collaborator.findAll({ where: {
         agencyId: agency.id
       }});
-    }).then(function(collaboraters){
-      res.status(200).json(collaboraters);
+    }).then(function(collaborators){
+      res.status(200).json(collaborators);
     });
 
 });
@@ -146,18 +159,18 @@ router.put('/validateList/:token', function(req, res) {
     Agency.findOne({ where: { token: req.params.token } })
     .then(function(agency) {
 
-      Collaborater.destroy({
+      Collaborator.destroy({
         where: {
           agencyId: agency.id
         }
       }).then(function(){
-        var collaboraters = req.body;
-        collaboraters.forEach(function(collaborater) {
-          collaborater.id = undefined;
-          collaborater.agencyId = agency.id;
+        var collaborators = req.body;
+        collaborators.forEach(function(collaborator) {
+          collaborator.id = undefined;
+          collaborator.agencyId = agency.id;
         });
-        return Collaborater
-          .bulkCreate(collaboraters);
+        return collaborator
+          .bulkCreate(collaborators);
       }).then(function(){
         var dateNow = dateformat(new Date(), "yyyy-mm-dd h:MM:ss");
         return Agency.update(
@@ -165,7 +178,7 @@ router.put('/validateList/:token', function(req, res) {
               { where: { id: agency.id } }
           );
       }).then(function(){
-          res.json({ message: 'Collaboraters created!' });
+          res.json({ message: 'Collaborators created!' });
       }).catch(function(error) {
         console.log(error);
         // whooops
@@ -173,42 +186,44 @@ router.put('/validateList/:token', function(req, res) {
     })
 });
 
+function getCrypto(){
+  return crypto.randomBytes(20).toString('hex');
+}
+
 
 function send(agency) {
-   require('crypto').randomBytes(48, function(err, buffer) {
-        var token = buffer.toString('hex') + agency.id;
-        console.log("token : "+token);
-        var dateNow = dateformat(new Date(), "yyyy-mm-dd h:MM:ss");
-        connection.query("UPDATE agency set token = '"+token+"', mailDate='"+dateNow+"' where id='"+user.id+"'", function(err, rows, fields) {
+  var token = getCrypto() + agency.id;
+  console.log("token : "+token);
+  var dateNow = dateformat(new Date(), "yyyy-mm-dd h:MM:ss");
+  connection.query("UPDATE agency set token = '"+token+"', mailDate='"+dateNow+"' where id='"+user.id+"'", function(err, rows, fields) {
 
-          // Not the movie transporter!
-          var transporter = nodemailer.createTransport({
-              service: 'Gmail',
-              auth: {
-                  agency: 'aymeric.mortemousque@gmail.com', // Your email id
-                  pass: 'jhLiexc7' // Your password
-              }
-          });
+    // Not the movie transporter!
+    var transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            agency: 'aymeric.mortemousque@gmail.com', // Your email id
+            pass: 'jhLiexc7' // Your password
+        }
+    });
 
-          var mailOptions = {
-              from: 'aymeric.mortemousque@gmail.com', // sender address
-              to: agency.mail, // list of receivers
-              subject: 'Email Example', // Subject line
-              text: 'Hello world from \n\n' //, // plaintext body
-              // html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
-          };
+    var mailOptions = {
+        from: 'aymeric.mortemousque@gmail.com', // sender address
+        to: agency.mail, // list of receivers
+        subject: 'Email Example', // Subject line
+        text: 'Hello world from \n\n' //, // plaintext body
+        // html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
+    };
 
-          transporter.sendMail(mailOptions, function(error, info){
-              if(error){
-                  console.log(error);
-              }else{
-                  console.log('Message sent: ' + info.response);
-              };
-          });
+    transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+            console.log(error);
+        }else{
+            console.log('Message sent: ' + info.response);
+        };
+    });
 
-        });
+  });
 
-      });
 }
 
 
@@ -250,9 +265,10 @@ var storage =   multer.diskStorage({
 });
 
 function parseFrDate(st) {
-      if(st != "") {
-        var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
-        var dt = new Date(st.replace(pattern,'$3-$2-$1'));
+      if(st != "" && st != "0") {
+        //var pattern = /(\d{2})\/(\d{2})\/(\d{4})/;
+        //var dt = new Date(st.replace(pattern,'$3-$2-$1'));
+        var dt = new Date(st);
       } else {
         var dt = null;
       }
@@ -273,13 +289,18 @@ router.post('/uploadAgencies/', function(req, res) {
           csvtojson({
               noheader: false,
               trim: true,
-              delimiter: ";"
+              delimiter: ";",
+              ignoreColumns: [6]
           })
           .fromFile("./server/uploads/"+res.req.file.filename)
           .on('json',function(jsonRow) {
-              let agencyBdd = agencies.filter(function(agencyBdd) { return agencyBdd.code == jsonRow.code; });
+              let agencyBdd = agencies.filter(function(agencyBdd) { return agencyBdd.accountId == jsonRow.accountId; });
               if(agencyBdd.length == 0) {
-                jsonRow.openingDate = parseFrDate(jsonRow.openingDate );
+                jsonRow.openingDate = parseFrDate(jsonRow.openingDate);
+                jsonRow.closingDate = parseFrDate(jsonRow.closingDate);
+                jsonRow.roleId = 2;
+                jsonRow.token = getCrypto();
+                jsonRow.isActive = jsonRow.isActive == "False" ? 0 : 1;
                 agencyToInsert.push(jsonRow);
               }
 
@@ -291,10 +312,10 @@ router.post('/uploadAgencies/', function(req, res) {
                     res.json({success:true, message: "Import success"});
                 })
                 .catch(function(errors){
-                    res.json({success:false, message: "Import error"});
+                    res.json({success:false, message: "Import error : " + errors.message});
                 });
               } else {
-                res.json({success:false, message: "Import error"});
+                res.json({success:false, message: "Import error" + errors.message});
               }
           });
 
@@ -306,20 +327,20 @@ router.post('/uploadAgencies/', function(req, res) {
 
 
 
-router.post('/uploadCollaboraters/', function(req, res) {
-    var upload = multer({ storage : storage}).single('collaboratersUpload');
+router.post('/uploadCollaborators/', function(req, res) {
+    var upload = multer({ storage : storage}).single('collaboratorsUpload');
     upload(req,res,function(err) {
         if(err) {
             return res.end("Error uploading file.");
         }
-        var collaboratersToInsert = [];
+        var collaboratorsToInsert = [];
         var agencyP = Agency.findAll();
-        var collaboraterP = Collaborater.findAll();
+        var collaboratorP = Collaborator.findAll();
 
-        Promise.all([agencyP, collaboraterP])
+        Promise.all([agencyP, collaboratorP])
         .then(function(values){
             var agencies = values[0];
-            var collaboraters = values[1];
+            var collaborators = values[1];
             csvtojson({
                 noheader: false,
                 trim: true,
@@ -327,26 +348,26 @@ router.post('/uploadCollaboraters/', function(req, res) {
             })
             .fromFile("./server/uploads/"+res.req.file.filename)
             .on('json',function(jsonRow) {
-                let agencyBdd = agencies.filter(function(agencyBdd) { return agencyBdd.code == jsonRow.code; });
-                let collaboraterBdd = collaboraters.filter(function(collaboraterBdd) { return collaboraterBdd.email == jsonRow.email; });
+                let agencyBdd = agencies.filter(function(agencyBdd) { return agencyBdd.accountId == jsonRow.code; });
+                let collaboratorBdd = collaborators.filter(function(collaboratorBdd) { return collaboratorBdd.email == jsonRow.email; });
 
-                if(agencyBdd.length > 0 && collaboraterBdd.length == 0) {
+                if(agencyBdd.length > 0 && collaboratorBdd.length == 0) {
                   jsonRow.birthDate = parseFrDate(jsonRow.birthDate);
                   jsonRow.agencyId = agencyBdd[0].id;
-                  collaboratersToInsert.push(jsonRow);
+                  collaboratorsToInsert.push(jsonRow);
                 }
             })
             .on('done', function(error) {
                 if(error == undefined) {
-                  Collaborater.bulkCreate(collaboratersToInsert, { validate: true })
+                  Collaborator.bulkCreate(collaboratorsToInsert, { validate: true })
                   .then(function(){
                       res.json({success:true, message: "Import success"});
                   })
                   .catch(function(errors){
-                      res.json({success:false, message: "Import error"});
+                      res.json({success:false, message: "Import error :"+ errors.message});
                   });
                 } else {
-                  res.json({success:false, message: "Import error"});
+                  res.json({success:false, message: "Import error :"+ errors.message});
                 }
             });
 
@@ -358,15 +379,15 @@ router.post('/uploadCollaboraters/', function(req, res) {
 
 
 
-router.get('/downloadCollaboraters/:token', function(req, res) {
-  Collaborater.findAll()
-      .then(function(collaboraters){
+router.get('/downloadCollaborators/:token', function(req, res) {
+  Collaborator.findAll()
+      .then(function(collaborators){
           var fields = ['firstName', 'lastName', 'birthDate', 'email', 'phone', 'title'];
-          collaboraters.forEach(function(element) {
+          collaborators.forEach(function(element) {
             if(element.dataValues.birthDate != "")
               element.dataValues.birthDate = dateformat(element.dataValues.birthDate, "dd/mm/yyyy h:MM:ss");
           }, this);
-          var csv = json2csv({ data: collaboraters, fields: fields, del: ';' });
+          var csv = json2csv({ data: collaborators, fields: fields, del: ';' });
           res.attachment('collaborateurs.csv');
           res.status(200).send(csv);
       });

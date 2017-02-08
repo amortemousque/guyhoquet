@@ -1,43 +1,82 @@
-<app-side-menu></app-side-menu>
 
-<app-header [title]="'Guy Hoquet'"></app-header>
-<div class="container">
+<md-sidenav-container>
+  <md-sidenav #sidenav mode="side" opened="true">
+    <nav class="side-style">
+      <div class="account-container">
+          <img src="assets/images/user.jpg"/>
+      </div>
+      <ul>
+        <li>
+          <a routerlinkactive="docs-component-viewer-sidenav-item-selected" routerLink="/agencies/testtoken" class="">
+            Agences
+          </a>
+        </li>
+        <li>
+          <a routerlinkactive="docs-component-viewer-sidenav-item-selected" routerLink="/settings/testtoken" class="">
+            Imports
+          </a>
+          </li>
+      </ul>
+    </nav>
+  </md-sidenav>
 
-  <h1 class="page-header" id="overview">Agences</h1>
-  <p-dataTable [value]="agencies" [rows]="10" [paginator]="true" [pageLinks]="3" [rowsPerPageOptions]="[5,10,20]">
-      <p-column field="name" header="Nom" [editable]="true"  [sortable]="true"> </p-column>
-      <p-column field="phone" header="Téléphone" [editable]="true"  [sortable]="true"></p-column>
-      <p-column field="mail" header="Mail" [editable]="true"  [sortable]="true"></p-column>
-      <p-column field="address" header="Adresse" [editable]="true"  [sortable]="true"></p-column>
-      <p-column field="hasValidList" header="Liste validée" [editable]="true" [sortable]="true">
-        <template let-col let-agency="rowData" pTemplate="body">
-          <div style="text-align:center">
-            <i class="fa fa-times fa-2x text-danger" [hidden]="agency.hasValidList"></i>
-            <i class="fa fa-check fa-2x text-success" [hidden]="!agency.hasValidList"></i>
-          </div>
-        </template>
-      </p-column>
-      <p-column field="address" header="Mail envoyé" [editable]="true"  [sortable]="true">
-        <template let-col let-agency="rowData" pTemplate="body">
-          <div style="text-align:center">
-          <span class="text-success" [hidden]="!agency.token">Oui</span>
-          <span class="text-danger" [hidden]="agency.token">Non</span>
-          </div>
-        </template>
-      </p-column>
-      <p-column  header="">
-        <template let-col let-agency="rowData" pTemplate="body">
-          <button pButton icon="fa-send" iconPos="left" (click)="sendMail(agency)"></button>
-        </template>
-      </p-column>
-  </p-dataTable>
-  <br />
-  <button pButton  class="ui-button-default" type="button" (click)="sendMails()" icon="fa-send" iconPos="left" label="Envoyer les mails aux personnes n'ayant pas validées leur liste de collaborateurs"></button>
+  <div class="my-content">
 
-  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" #cd>
-      <p-footer>
-          <button type="button" pButton icon="fa-close" label="Non" (click)="cd.reject()"></button>
-          <button type="button" pButton disabled="disabled" icon="{{load ? 'fa-spin fa-circle-o-notch' : 'fa-check'}}" label="Oui" (click)="cd.accept()"></button>
-      </p-footer>
-  </p-confirmDialog>
-</div>
+    <app-header [title]="'Guy Hoquet'" [nav]="sidenav"></app-header>
+    <div class="container">
+
+      <md-card>
+        <md-card-title>Agences</md-card-title>
+        <md-card-content>
+        <p-dataTable [value]="agencies" [rows]="10" [paginator]="true" [pageLinks]="3" [rowsPerPageOptions]="[5,10,20]">
+            <p-column field="name" header="Nom" [editable]="true"  [sortable]="true"> </p-column>
+            <p-column field="phone" header="Téléphone" [editable]="true"  [sortable]="true"></p-column>
+            <p-column field="mail" header="Mail" [editable]="true"  [sortable]="true"></p-column>
+            <p-column field="address" header="Adresse" [editable]="true"  [sortable]="true"></p-column>
+            <p-column field="hasValidList" header="Liste validée" [editable]="true" [sortable]="true">
+              <template let-col let-agency="rowData" pTemplate="body">
+                <div style="text-align:center">
+                  <md-icon [hidden]="agency.hasValidList">clear</md-icon>
+                  <md-icon [hidden]="!agency.hasValidList">done</md-icon>
+                </div>
+              </template>
+            </p-column>
+            <p-column field="mailDate" header="Mail envoyé" [editable]="true"  [sortable]="true">
+              <template let-col let-agency="rowData" pTemplate="body">
+                <div style="text-align:center">
+                <span class="text-success" [hidden]="!agency.mailDate">Oui</span>
+                <span class="text-danger" [hidden]="agency.mailDate">Non</span>
+                </div>
+              </template>
+            </p-column>
+            <p-column  header="">
+              <template let-col let-agency="rowData" pTemplate="body">
+
+                <md-menu #appMenu="mdMenu">
+                  <button md-menu-item (click)="sendMail(agency)"> <md-icon>send</md-icon>Envoyer </button>
+                  <button target="_blank" md-menu-item routerLink="/collaboraters/{{agency.token}}"> <md-icon>open_in_browser</md-icon>Voir </button>
+                </md-menu>
+
+                <button md-icon-button [mdMenuTriggerFor]="appMenu">
+                  <md-icon>more_vert</md-icon>
+                </button>
+              </template>
+            </p-column>
+        </p-dataTable>
+        <br />
+        </md-card-content>
+          <md-card-actions>
+          <button md-button (click)="sendMails()">RELANCER</button>
+          <button md-button (click)="exportCollaboraters()">EXPORTER</button>
+        </md-card-actions>
+      </md-card>
+    </div>
+  </div>
+</md-sidenav-container>
+
+<p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" #cd>
+    <p-footer>
+        <button type="button" pButton icon="fa-close" label="Non" (click)="cd.reject()"></button>
+        <button type="button" pButton  disabled="disabled" icon="{{load ? 'fa-spin fa-circle-o-notch' : 'fa-check'}}" label="Oui" (click)="cd.accept()"></button>
+    </p-footer>
+</p-confirmDialog>

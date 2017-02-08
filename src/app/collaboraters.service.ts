@@ -12,10 +12,14 @@ export class CollaboratersService {
 
   constructor(private http: Http) { }
 
+  exportCollaboraters(token) {
+    return this.http.get('http://localhost:8000/api/downloadCollaborators/' + token);
+                      //  .map(res => <Collaborater> res.json());
+  }
+
   getAllCollaboraters(token) {
-    return this.http.get('http://localhost:8000/api/collaboraters/'+ token)
-                        // .map(res => <Collaborater[]> res.json());
-                    .map(res => {return this.extractData(res);});
+    return this.http.get('http://localhost:8000/api/collaborators/'+ token)
+                     .map(res => <Collaborater[]> res.json());
   }
 
 

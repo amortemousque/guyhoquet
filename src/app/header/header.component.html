@@ -1,5 +1,11 @@
- <div class="bs-docs-header" id="content" tabindex="-1">
+ <div (window:resize)="onResize($event)" class="bs-docs-header" id="content" tabindex="-1">
     <div class="container">
+      <div [hidden]="isLarge" style="float: left;margin-right: 20px; margin-top: 57px;">
+        <button md-icon-button (click)="toggleSideNav()"  >
+          <md-icon >menu</md-icon>
+        </button>
+      </div>
+
       <div style="float: left; margin-right:30px; ">
         <img src="assets/images/LogoGHI.png"/>
       </div>

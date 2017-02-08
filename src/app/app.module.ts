@@ -17,6 +17,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { HeaderComponent } from './header/header.component';
 import { SettingsComponent } from './settings/settings.component';
 import { SideMenuComponent } from './side-menu/side-menu.component';
+import { MaterialModule } from '@angular/material';
 
 // Define the routes
 const appRoutes: Routes = [
@@ -61,6 +62,7 @@ const appRoutes: Routes = [
     MessagesModule,
     FileUploadModule,
     MenuModule,
+    MaterialModule.forRoot()
   ],
   providers: [CollaboratersService, AgenciesService],
   bootstrap: [AppComponent]

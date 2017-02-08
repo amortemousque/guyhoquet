@@ -1,67 +1,17 @@
+// .navbar-default {
 
-    ng-sidebar-container {
-      box-sizing: border-box;
-      display: block;
-    }
+//   background: #1B3785;
+// border: none;
+// }
 
-    .ng-sidebar__backdrop {
-      background: #000;
-      height: 100%;
-      left: 0;
-      opacity: 0.75;
-      pointer-events: auto;
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 99999998;
-    }
+// .navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.open>a {
 
-    .ng-sidebar__content {
-      display: block;
-      height: 100%;
-      overflow: auto;
-    }
+// }
 
+// .navbar-inverse .navbar-nav>li>a {
+//   color:#fff;
+// }
 
-    .ng-sidebar {
-      background-color: #fff;
-      overflow: auto;
-      pointer-events: auto;
-      position: fixed;
-      will-change: initial;
-      z-index: 99999999;
-    }
-
-      .ng-sidebar--left {
-        bottom: 0;
-        left: 0;
-        top: 0;
-      }
-
-      .ng-sidebar--right {
-        bottom: 0;
-        right: 0;
-        top: 0;
-      }
-
-      .ng-sidebar--top {
-        left: 0;
-        right: 0;
-        top: 0;
-      }
-
-      .ng-sidebar--bottom {
-        bottom: 0;
-        left: 0;
-        right: 0;
-      }
-
-    .ng-sidebar--inert {
-      pointer-events: none;
-      will-change: transform;
-    }
-
-    .ng-sidebar--animate.ng-sidebar {
-      -webkit-transition: -webkit-transform 0.3s cubic-bezier(0, 0, 0.3, 1);
-      transition: transform 0.3s cubic-bezier(0, 0, 0.3, 1);
-    }
+// .navbar-inverse .navbar-brand {
+//   color:#fff;
+// }
